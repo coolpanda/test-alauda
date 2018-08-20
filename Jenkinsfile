@@ -27,6 +27,10 @@
   node {
     stage('Build') {
       echo 'Building....'
+      withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
+        sh "mvn -B –Dmaven.test.failure.ignore=true clean package"
+      }
+      sh 'mvn --version'
     }
     stage('Test') {
       echo 'Building....'
