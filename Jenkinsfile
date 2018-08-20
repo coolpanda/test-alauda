@@ -1,41 +1,10 @@
-  // Declarative //
-  pipeline {
-    agent any
+pipeline {
+    agent { docker { image 'maven:3.3.3' } }
     stages {
-      stage('Build') {
-        steps {
-          echo 'Building..'
-          withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
-              sh "mvn -B –Dmaven.test.failure.ignore=true clean package"
-          }
-          sh 'mvn --version'
+        stage('build') {
+            steps {
+                sh 'mvn --version'
+            }
         }
-      }
-      stage('Test') {
-        steps {
-          echo 'Testing..'
-        }
-      }
-      stage('Deploy') {
-        steps {
-          echo 'Deploying....'
-        }
-      }
-    } 
-  }
-  // Script //
-  node {
-    stage('Build') {
-      echo 'Building....'
-      withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
-        sh "mvn -B –Dmaven.test.failure.ignore=true clean package"
-      }
-      sh 'mvn --version'
     }
-    stage('Test') {
-      echo 'Building....'
-    }
-    stage('Deploy') {
-      echo 'Deploying....'
-    }
-  }
+}
