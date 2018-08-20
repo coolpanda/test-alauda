@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>oschina</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -21,6 +21,8 @@
 	<properties>
 		<!-- docker -->
 		<dockerfile-maven-version>1.3.6</dockerfile-maven-version>
+		<docker.repostory>registry.cn-huhehaote.aliyuncs.com</docker.repostory>
+		<docker.registry.name>oschina</docker.registry.name>
 		<!-- <project.build.directory></project.build.directory> <project.build.finalName></project.build.finalName> -->
 		<!-- spring boot -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -47,25 +49,58 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<!-- 打包Docker -->
 			<plugin>
 				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>${dockerfile-maven-version}</version>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.13</version>
 				<executions>
 					<execution>
-						<id>default</id>
+						<id>build-image</id>
+						<phase>package</phase>
 						<goals>
 							<goal>build</goal>
-							<goal>push</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>tag-image</id>
+						<phase>package</phase>
+						<goals>
+							<goal>tag</goal>
+						</goals>
+						<configuration>
+							<image>${docker.registry.name}/${project.artifactId}:${project.version}</image>
+							<newName>${docker.registry.name}/${project.artifactId}:${project.version}</newName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>push-image</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>push</goal>
+						</goals>
+						<configuration>
+							<imageName>${docker.registry.name}/${project.artifactId}:${project.version}</imageName>
+						</configuration>
+					</execution>
 				</executions>
+			
 				<configuration>
-					<repository>test-alauda/test</repository>
-					<tag>${project.version}</tag>
-					<buildArgs>
-						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
+					<serverId>docker-aliyun</serverId>
+					<registryUrl>registry.cn-huhehaote.aliyuncs.com</registryUrl>
+					<pushImage>true</pushImage>
+					<dockerDirectory>${project.basedir}</dockerDirectory>
+					<imageName>${docker.repostory}/${docker.registry.name}/${project.artifactId}:${project.version}</imageName>
+					<imageTags>
+						<imageTag>latest</imageTag>
+					</imageTags>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
 				</configuration>
 			</plugin>
 		</plugins>
