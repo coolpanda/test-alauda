@@ -2,18 +2,18 @@
   pipeline {
     agent any
     stages {
-      stage('Build') {
+      stage('Build-s') {
         steps {
           echo 'Building..'
           sh 'mvn --version'
         }
       }
-      stage('Test') {
+      stage('Test-s') {
         steps {
           echo 'Testing..'
         }
       }
-      stage('Deploy') {
+      stage('Deploy-s') {
         steps {
           echo 'Deploying....'
         }
@@ -22,13 +22,13 @@
   }
   // Script //
   node {
-    stage('Build') {
+    stage('Build-n') {
       echo 'Building....'
     }
-    stage('Test') {
+    stage('Test-n') {
       echo 'Building....'
     }
-    stage('Deploy') {
+    stage('Deploy-n') {
       echo 'Deploying....'
     }
   }
